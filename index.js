@@ -1,13 +1,13 @@
 var jwt = localStorage.getItem("jwt");
 if (jwt == null) {
-  window.location.href = './login.html'
+    window.location.href = './login.html'
 }
 let tasks = []
 async function logTasks() {
     const response = await fetch('http://demo2.z-bit.ee/tasks', {
         method: 'GET',
         headers: {
-            'Authorization': "Bearer "+jwt,
+            'Authorization': "Bearer " + jwt,
         },
     })
     tasks = await response.json();
@@ -146,7 +146,7 @@ function submitTask(title) {
     xhttp.open("POST", "http://demo2.z-bit.ee/tasks", true);
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.setRequestHeader("Authorization", "Bearer " + jwt);
-    xhttp.onreadystatechange = function() {
+    xhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             console.log('Task Added:', this.responseText);
             // Optionally, reload or update task list in the original window

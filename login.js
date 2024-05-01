@@ -2,7 +2,9 @@ var jwt = localStorage.getItem("jwt");
 if (jwt != null) {
   window.location.href = './index.html'
 }
-
+function send() {
+  window.location.href = './register.html'
+}
 function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -21,7 +23,7 @@ function login() {
       if (objects['access_token']) {
         localStorage.setItem("jwt", objects['access_token']);
         Swal.fire({
-          text: objects['message'],
+          text: "Logged In Successfully!",
           icon: 'success',
           confirmButtonText: 'OK'
         }).then((result) => {
