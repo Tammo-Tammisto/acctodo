@@ -79,6 +79,42 @@ function createTaskRow(task) {
     return taskRow;
 }
 
+async function deleteTask(button) {
+    // Access the closest parent <li> element which represents the task row
+    const taskRow = button.closest('.ant-list-item');
+
+    // Find the input field within this task row
+    const nameInput = taskRow.querySelector("[name='name']");
+
+    // Log or use the name
+    console.log(nameInput.value);
+
+    // If you want to remove the task from the display as well
+    taskRow.remove();
+    
+    // Assuming you might have an array of tasks or a similar structure to update
+    const taskIndex = tasks.findIndex(task => task.title === nameInput.value);
+    if (taskIndex !== -1) {
+        tasks.splice(taskIndex, 1);
+    }
+    const response = await fetch('http://demo2.z-bit.ee/tasks', {
+        method: 'GET',
+        headers: {
+            'Authorization': "Bearer " + jwt,
+        },
+    })
+    tasks = await response.json();
+    console.log(tasks)
+    idOfDeletedTask = tasks.find(task => task.title === nameInput.value).id
+    console.log(idOfDeletedTask)
+    fetch('http://demo2.z-bit.ee/tasks/'+idOfDeletedTask, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': "Bearer " + jwt,
+        },
+        body: null //if you do not want to send any addional data,  replace the complete JSON.stringify(YOUR_ADDITIONAL_DATA) with null
+      })
+}
 
 function createAntCheckbox() {
     const checkbox = document.querySelector('[data-template="ant-checkbox"]').cloneNode(true);
