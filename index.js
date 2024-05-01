@@ -36,19 +36,9 @@ function logout() {
     window.location.href = './login.html'
 }
 let taskList;
-let addTask;
 // kui leht on brauseris laetud siis lisame esimesed taskid lehele
 window.addEventListener('load', () => {
     taskList = document.querySelector('#task-list');
-    addTask = document.querySelector('#add-task');
-
-
-    // kui nuppu vajutatakse siis lisatakse uus task
-    addTask.addEventListener('click', () => {
-        const task = createTask(); // Teeme kõigepealt lokaalsesse "andmebaasi" uue taski
-        const taskRow = createTaskRow(task); // Teeme uue taski HTML elementi mille saaks lehe peale listi lisada
-        taskList.appendChild(taskRow); // Lisame taski lehele
-    });
 });
 
 function renderTask(task) {
@@ -127,3 +117,42 @@ function hydrateAntCheckboxes(element) {
     }
 }
 
+function addTask() {
+    // Open a new window or popup
+    var taskWindow = window.open('', 'Add Task', 'width=300,height=200');
+
+    // Basic HTML structure for the new window
+    taskWindow.document.write('<html><head><title>Add New Task</title></head><body>');
+
+    // Form for adding a task
+    taskWindow.document.write('<form id="taskForm">');
+    taskWindow.document.write('Title: <input type="text" id="title" name="title"><br>');
+    // Add the window close function to the onclick event
+    taskWindow.document.write('<input type="button" value="Add Task" onclick="opener.submitTask(document.getElementById(\'title\').value); window.close();">');
+    taskWindow.document.write('</form>');
+
+    // Close the HTML document
+    taskWindow.document.write('</body></html>');
+    taskWindow.document.close(); // Close the document for further writing
+}
+
+
+function submitTask(title) {
+    // Process task submission, e.g., send it to a server or log it
+    console.log('Task Title:', title);
+
+    // Here, add your logic to send task to the backend server
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "http://demo2.z-bit.ee/tasks", true);
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader("Authorization", "Bearer " + jwt);
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+            console.log('Task Added:', this.responseText);
+            // Optionally, reload or update task list in the original window
+            window.location.reload();
+        }
+    };
+    xhttp.send(JSON.stringify({ title: title }));
+    refreshTasks();
+}
