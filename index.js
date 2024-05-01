@@ -91,7 +91,7 @@ async function deleteTask(button) {
 
     // If you want to remove the task from the display as well
     taskRow.remove();
-    
+
     // Assuming you might have an array of tasks or a similar structure to update
     const taskIndex = tasks.findIndex(task => task.title === nameInput.value);
     if (taskIndex !== -1) {
@@ -107,14 +107,62 @@ async function deleteTask(button) {
     console.log(tasks)
     idOfDeletedTask = tasks.find(task => task.title === nameInput.value).id
     console.log(idOfDeletedTask)
-    fetch('http://demo2.z-bit.ee/tasks/'+idOfDeletedTask, {
+    fetch('http://demo2.z-bit.ee/tasks/' + idOfDeletedTask, {
         method: 'DELETE',
         headers: {
             'Authorization': "Bearer " + jwt,
         },
         body: null //if you do not want to send any addional data,  replace the complete JSON.stringify(YOUR_ADDITIONAL_DATA) with null
-      })
+    })
 }
+
+function markDone(checkbox) {
+    // Access the closest parent <li> element which represents the task row
+    const taskRow = checkbox.closest('.ant-list-item');
+
+    // Find the input field within this task row that contains the name
+    const nameInput = taskRow.querySelector("[name='name']");
+
+    idOfMarkedTask = tasks.find(task => task.title === nameInput.value).id
+
+    const dataTrue = {
+        "title": nameInput.value,
+        "marked_as_done": true
+    }
+    const putMethodTrue = {
+        method: 'PUT', // Method itself
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8', // Indicates the content 
+            'Authorization': "Bearer " + jwt,
+        },
+        body: JSON.stringify(dataTrue) // We send data in JSON format
+    }
+    const dataFalse = {
+        "title": nameInput.value,
+        "marked_as_done": false
+    }
+    const putMethodFalse = {
+        method: 'PUT', // Method itself
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8', // Indicates the content 
+            'Authorization': "Bearer " + jwt,
+        },
+        body: JSON.stringify(dataFalse) // We send data in JSON format
+    }
+
+    // Check if the checkbox is checked
+    if (checkbox.checked) {
+        console.log(`Task marked as done: ${nameInput.value}`);
+        fetch('http://demo2.z-bit.ee/tasks/' + idOfMarkedTask, putMethodTrue)
+
+    } else {
+        console.log(`Task unmarked as done: ${nameInput.value}`);
+        fetch('http://demo2.z-bit.ee/tasks/' + idOfMarkedTask, putMethodFalse)
+    }
+
+    console.log(idOfMarkedTask)
+}
+
 
 function createAntCheckbox() {
     const checkbox = document.querySelector('[data-template="ant-checkbox"]').cloneNode(true);
